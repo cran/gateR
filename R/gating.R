@@ -9,17 +9,19 @@
 #' @param alpha Numeric. The two-tailed alpha level for significance threshold (default is 0.05).
 #' @param p_correct Character string specifying whether to apply a correction for multiple comparisons including a Bonferroni correction \code{p_correct = "uncorrelated"} or a correlated Bonferroni correction \code{p_correct = "correlated"}. If \code{p_correct = "none"} (the default), then no correction is applied. 
 #' @param nbc Optional. An integer for the number of bins when \code{p_correct = "correlated"}. Similar to \code{nbclass} argument in \code{\link[pgirmess]{correlog}}. The default is the average number of gridded knots in one-dimension (i.e., x-axis).
-#' @param doplot Logical. If \code{TRUE}, the output includes basic data visualizations.
+#' @param plot_gate Logical. If \code{TRUE}, the output includes basic data visualizations.
+#' @param save_gate Logical. If \code{TRUE}, the output saves each visualization as a separate PNG file.
+#' @param name_gate Optional, character. The filename of the visualization(s). The default is "gate_k" where "k" is the gate number.
+#' @param path_gate Optional, character. The path of the visualization(s). The default is the current working directory.
 #' @param rcols Character string of length three (3) specifying the colors for: 1) group A (numerator), 2) neither, and 3) group B (denominator) designations. The defaults are \code{c("#FF0000", "#cccccc", "#0000FF")} or \code{c("red", "grey80", "blue")}.
 #' @param lower_lrr Optional, numeric. Lower cut-off value for the log relative risk value in the color key (typically a negative value). The default is no limit and the color key will include the minimum value of the log relative risk surface. 
 #' @param upper_lrr Optional, numeric. Upper cut-off value for the log relative risk value in the color key (typically a positive value). The default is no limit and the color key will include the maximum value of the log relative risk surface.
 #' @param c1n Optional, character. The name of the level for the numerator of condition A. The default is null and the first level is treated as the numerator. 
 #' @param c2n Optional, character. The name of the level for the numerator of condition B. The default is null and the first level is treated as the numerator.
 #' @param win Optional. Object of class \code{owin} for a custom two-dimensional window within which to estimate the surfaces. The default is NULL and calculates a convex hull around the data. 
-#' @param verbose Logical. If \code{TRUE} will print function progress during execution. If \code{FALSE} (the default), will not print.
 #' @param ... Arguments passed to \code{\link[sparr]{risk}} to select bandwidth, edge correction, and resolution.
 #'
-#' @details This function performs a sequential gating strategy for mass cytometry data comparing two levels with one or two conditions. Gates are typically two-dimensional space comprised of two fluorescent markers. The two-level comparison allows for the estimation of a spatial relative risk function and the computation of p-value based on an assumption of asymptotic normality. Cells within statistically significant areas are extracted and used in the next gate. This function relies heavily upon the \code{\link[sparr]{risk}} function. Basic visualization is available if \code{doplot = TRUE}. 
+#' @details This function performs a sequential gating strategy for mass cytometry data comparing two levels with one or two conditions. Gates are typically two-dimensional space comprised of two fluorescent markers. The two-level comparison allows for the estimation of a spatial relative risk function and the computation of p-value based on an assumption of asymptotic normality. Cells within statistically significant areas are extracted and used in the next gate. This function relies heavily upon the \code{\link[sparr]{risk}} function. Basic visualization is available if \code{plot_gate = TRUE}. 
 #' 
 #' The \code{vars} argument must be a vector with an even-numbered length where the odd-numbered elements are the markers used on the x-axis of a gate and the even-numbered elements are the markers used on the y-axis of a gate. For example, if \code{vars = c("V1", "V2", "V3", and "V4")} then the first gate is "V1" on the x-axis and "V2" on the y-axis and then the second gate is V3" on the x-axis and "V4" on the y-axis. Makers can be repeated in successive gates. 
 #' 
@@ -73,14 +75,16 @@ gating <- function(dat,
                    alpha = 0.05,
                    p_correct = "none",
                    nbc = NULL,
-                   doplot = FALSE,
+                   plot_gate = FALSE,
+                   save_gate = FALSE,
+                   name_gate = NULL,
+                   path_gate = NULL,
                    rcols = c("#FF0000", "#cccccc", "#0000FF"),
                    lower_lrr = NULL,
                    upper_lrr = NULL,
                    c1n = NULL,
                    c2n = NULL,
                    win = NULL,
-                   verbose = FALSE,
                    ...) {
   
   # Checks
@@ -88,12 +92,15 @@ gating <- function(dat,
   if ("data.frame" %!in% class(dat)) { stop("'dat' must be class 'data.frame'") }
   
   ## vars
-  if (!all(vars %in% names(dat))) {
-    stop("All elements in the argument 'vars' must match named features of 'dat'." )
+  vars <- make.names(vars, unique = TRUE)
+  colnames(dat) <- make.names(colnames(dat), unique = TRUE)
+  
+  if (!all(vars %in% colnames(dat))) {
+    stop("All elements in the argument 'vars' must match named features of 'dat'" )
   }
   
   if ((length(vars) %% 2) != 0 ) {
-    stop("The argument 'vars' must be a character vector with an even-numbered length.")
+    stop("The argument 'vars' must be a character vector with an even-numbered length")
   }
   
   ## n_condition
@@ -110,12 +117,12 @@ gating <- function(dat,
   
   ## alpha
   if (alpha <= 0 | alpha >= 1 ) {
-    stop("The argument 'alpha' must be a numeric value between zero (0) and one (1).")
+    stop("The argument 'alpha' must be a numeric value between zero (0) and one (1)")
   }
   
   ## rcols
   if (length(rcols) != 3) {
-    stop("The argument 'rcols' must be a vector of length three (3).")
+    stop("The argument 'rcols' must be a vector of length three (3)")
   }
   
   ## win
@@ -125,11 +132,11 @@ gating <- function(dat,
   dat <- dat[!is.na(dat[ , which(colnames(dat) %in% vars[1])]) &
                !is.na(dat[ , which(colnames(dat) %in% vars[2])]), ]
 
-  if (n_condition == 1 & nlevels(dat[ , 2]) != 2) { stop("The second feature of 'dat' must be a binary factor.") }
+  if (n_condition == 1 & nlevels(dat[ , 2]) != 2) { stop("The second feature of 'dat' must be a binary factor") }
   
-  if (n_condition == 2 & nlevels(dat[ , 2]) != 2) { stop("The second feature of 'dat' must be a binary factor.") }
+  if (n_condition == 2 & nlevels(dat[ , 2]) != 2) { stop("The second feature of 'dat' must be a binary factor") }
   
-  if (n_condition == 2 & nlevels(dat[ , 3]) != 2) { stop("The third feature of 'dat' must be a binary factor.") }
+  if (n_condition == 2 & nlevels(dat[ , 3]) != 2) { stop("The third feature of 'dat' must be a binary factor") }
   
   if (n_condition == 2) { dat_gate <- dat[ , c(1:3, which(colnames(dat) %in% vars))]
   } else {
@@ -169,11 +176,15 @@ gating <- function(dat,
     if (k == 1) { p_correct <- p_correct } else { p_correct <- "none"}
     
     n_out[[k]] <- nrow(df)
+    name_gate <- paste("gate", k, sep = "_")
 
     if (n_condition == 2) {
     out <- lotrrs(dat = df,
                   win = win_gate,
-                  doplot = doplot,
+                  plot_gate = plot_gate,
+                  save_gate = save_gate,
+                  name_gate = name_gate,
+                  path_gate = path_gate,
                   alpha = alpha,
                   p_correct = p_correct,
                   nbc = nbc,
@@ -182,12 +193,14 @@ gating <- function(dat,
                   upper_lrr = upper_lrr,
                   c1n = c1n,
                   c2n = c2n,
-                  verbose = verbose,
                   ...)
     } else {
     out <- rrs(dat = df,
                win = win_gate,
-               doplot = doplot,
+               plot_gate = plot_gate,
+               save_gate = save_gate,
+               name_gate = name_gate,
+               path_gate = path_gate,
                alpha = alpha,
                p_correct = p_correct,
                nbc = nbc,
@@ -195,7 +208,6 @@ gating <- function(dat,
                lower_lrr = lower_lrr,
                upper_lrr = upper_lrr,
                c1n = c1n,
-               verbose = verbose,
                ...)
     }
 
@@ -207,12 +219,16 @@ gating <- function(dat,
 
     # Go back one gate if current gate has no significant area and produce output of previous gate
     if (all(raster::values(Ps)[!is.na(raster::values(Ps))] == 2) | all(is.na(raster::values(Ps)))) {
-      message(paste("Gate", k, "yeilded no significant", type_cluster, "cluster(s)...",
-                "Returning results from previous gate",
+      if (k > 1) {
+      message(paste("Gate", k, "yielded no significant", type_cluster, "cluster(s)...",
+                "Returning results from Gate", k-1,
                 sep = " "))
       output <- dat[which(dat[ , 1] %in% dat_gate[ , 1]), ]
       out_list <- list("obs" = output, "n" = n_out, "gate" = list_gate)
       return(out_list)
+      } else {
+        stop(paste("Gate 1 yielded no significant", type_cluster, "cluster(s)... Returning no results", sep = " "))
+      }
     }
 
     # convert categorized raster to gridded polygons
@@ -224,12 +240,16 @@ gating <- function(dat,
     pols <- try(maptools::unionSpatialPolygons(out_pol[out_pol$layer == v, ],
                                                IDs = rep(1, length(out_pol[out_pol$layer == v, ]))), silent = TRUE)
     if("try-error" %in% class(pols)) {
-      message(paste("Gate", k, "yeilded no significant", type_cluster, "cluster(s)...",
-                "Returning results from previous gate",
+      if (k > 1) {
+      message(paste("Gate", k, "yielded no significant", type_cluster, "cluster(s)...",
+                "Returning results from Gate", k-1,
                 sep = " "))
       output <- dat[which(dat[ , 1] %in% dat_gate[ , 1]), ]
       out_list <- list("obs" = output, "n" = n_out, "gate" = list_gate)
       return(out_list)
+      } else {
+        stop(paste("Gate 1 yielded no significant", type_cluster, "cluster(s)... Returning no results", sep = " "))
+      }
     }
     rm(out_pol) # conserve memory
 
