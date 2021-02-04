@@ -4,33 +4,40 @@
 \alias{pval_correct}
 \title{Calculate p-value corrections}
 \usage{
-pval_correct(input, alpha = 0.05, nbc = NULL)
+pval_correct(
+  input,
+  type = c("FDR", "correlated Sidak", "correlated Bonferroni", "uncorrelated Sidak",
+    "uncorrelated Bonferroni", "Adler and Hasofer", "Friston"),
+  alpha = 0.05,
+  nbc = NULL
+)
 }
 \arguments{
 \item{input}{An object of class 'rrs' from the \code{\link{rrs}} or \code{\link{lotrrs}} function.}
 
+\item{type}{Character string specifying which correction for multiple comparisons. Options include a False Discovery Rate \code{p_correct = "FDR"}, a spatially dependent Sidak correction \code{p_correct = "correlated Sidak"}, a spatially dependent Bonferroni correction \code{p_correct = "correlated Bonferroni"}, an independent Sidak correction \code{p_correct = "uncorrelated Sidak"}, an independent Bonferroni correction \code{p_correct = "uncorrelated Bonferroni"}, a Adler and Hasofer equation for the maximum of a Gaussian random field \code{p_correct = "Adler and Hasofer"}, and a Friston et al. equation for the maximum of a Gaussian random field \code{p_correct = "Friston"}.}
+
 \item{alpha}{Numeric. The two-tailed alpha level for significance threshold (default in \code{\link{rrs}} and \code{\link{lotrrs}} functions is 0.05).}
 
-\item{nbc}{Integer. The number of bins. Similar to \code{nbclass} argument in \code{\link[pgirmess]{correlog}} function. The default is the average number of gridded knots in one-dimension (i.e., x-axis).}
+\item{nbc}{Integer. The number of bins. Similar to \code{nbclass} argument in \code{\link[SpatialPack]{modified.ttest}} function. The default is 30.}
 }
 \value{
-An object of class 'list'. This is a named list with the following components:
-
-\describe{
-\item{\code{uncorrected}}{Numeric. Returns the uncorrected p-value.}
-\item{\code{correlated}}{Numeric. Returns the correlated Bonferroni corrected p-value.}
-\item{\code{uncorrelated}}{Numeric. Returns the uncorrelated Bonferroni corrected p-value.}
-}
+An object of class 'numeric' with the corrected alpha level.
 }
 \description{
-Internal function to calculate various p-value corrections including a correlated and uncorrelated Bonferroni correction for use within the \code{\link{rrs}} and \code{\link{lotrrs}} function.
+Internal function to calculate various p-value corrections for use within the \code{\link{rrs}} and \code{\link{lotrrs}} functions.
 }
 \details{
-This function provides functionality for multiple testing correction in two ways:
+This function provides functionality for multiple testing correction in five ways:
 
 \enumerate{
-\item Computes a conventional Bonferroni correction ("uncorrelated") by dividing the \code{alpha} level by the number of gridded knots across the estimated surface. The default in the \code{\link[sparr]{risk}} function is a resolution of 128 x 128 or n = 16,384 knots.
-\item Computes a correlated Bonferroni correction ("correlated") by taking in account the spatial correlation of the relative risk surface values (if using the \code{rrs} function for a single condition gate) or the ratio of relative risk surfaces values (if using the \code{lotrrs} function for a two condition gate). The \code{alpha} level is divided by the minimum number of knots that are not spatially correlated. The minimum number of knots that are not spatially correlated is computed by counting the knots that are a distance apart that exceeds the minimum distance of non-significant spatial correlation based on a correlogram using the \code{\link[pgirmess]{correlog}} function.
+\item Computes a False Discovery Rate by Benjamini and Hochberg \doi{10.1111/j.2517-6161.1995.tb02031.x} (\code{p_correct = "FDR"}) by: 1) sorting the p-values (p_i) of each knot in ascending order (p_1 <= p_2 <= ... <= p_m), 2) starting from p_m find the first p_i for which p_i <= (i/m) * alpha.
+\item Computes an independent Sidak correction \doi{10.2307/2283989} (\code{p_correct = "uncorrelated Sidak"}) by 1 - (1 - \code{alpha}) ^ (1 / total number of gridded knots across the estimated surface). The default in the \code{\link[sparr]{risk}} function is a resolution of 128 x 128 or n = 16,384 knots and a custom resolution can be specified using the \code{resolution} argument within the \code{\link[sparr]{risk}} function.
+\item Computes an independent Bonferroni correction (\code{p_correct = "uncorrelated Bonferroni"}) by \code{alpha} / total number of gridded knots across the estimated surface. The default in the \code{\link[sparr]{risk}} function is a resolution of 128 x 128 or n = 16,384 knots and a custom resolution can be specified using the \code{resolution} argument within the \code{\link[sparr]{risk}} function.
+\item Computes a spatially dependent Sidak correction (\code{p_correct = "correlated Sidak"}) by taking into account the spatial correlation of the relative risk surface values (if using the \code{rrs} function for a single condition gate) or the ratio of relative risk surfaces values (if using the \code{lotrrs} function for a two condition gate). The correction use the minimum number of knots that are not spatially correlated instead of the total number of knots. The minimum number of knots that are not spatially correlated is computed by counting the knots that are a distance apart that exceeds the minimum distance of non-significant spatial correlation based on a correlogram using the \code{\link[SpatialPack]{modified.ttest}} function.
+\item Computes a spatially dependent Bonferroni correction (\code{p_correct = "correlated Bonferroni"}) by taking into account the spatial correlation of the relative risk surface values (if using the \code{rrs} function for a single condition gate) or the ratio of relative risk surfaces values (if using the \code{lotrrs} function for a two condition gate). The correction uses the minimum number of knots that are not spatially correlated instead of the total number of knots. The minimum number of knots that are not spatially correlated is computed by counting the knots that are a distance apart that exceeds the minimum distance of non-significant spatial correlation based on a correlogram using the \code{\link[SpatialPack]{modified.ttest}} function.
+\item Computes a critical p-value based on Random Field Theory and the Adler and Hasofer equation (\code{p_correct = "Euler A&H"}) \doi{10.1214/aop/1176996176} and p.111 of \doi{10.1137/1.9780898718980}. The correction uses the number of knots that are independent based on the bandwidth used in the kernel density estimation of the spatial relative risk function.
+\item Computes a critical p-value based on Random Field Theory and the Friston et al. equation (\code{p_correct = "Euler Friston"}) \doi{10.1038/jcbfm.1991.122} which differs from Adler and Hasofer's equation by a factor of 0.79. The correction uses the number of knots that are independent based on the bandwidth used in the kernel density estimation of the spatial relative risk function.
 }
 }
 \keyword{internal}

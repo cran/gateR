@@ -1,6 +1,16 @@
 gateR: Flow/Mass Cytometry Gating via Spatial Kernel Density Estimation <img src="man/figures/gateR.png" width="120" align="right" />
 ===================================================
 
+<!-- badges: start -->
+
+[![CRAN
+version](https://www.r-pkg.org/badges/version-ago/gateR)](https://cran.r-project.org/package=gateR)
+[![CRAN RStudio mirror
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/gateR?color=blue)](https://r-pkg.org/pkg/gateR)
+![license](https://img.shields.io/badge/license-apache-yellow)
+
+<!-- badges: end -->
+
 <h2 id="overview">
 
 Overview
@@ -67,7 +77,7 @@ Available functions
 <td>Called within <code>gating</code>, two condition comparison. </td>
 </tr>
 <td><code>pval_correct</code></td>
-<td>Called within <code>rrs</code> and <code>lotrrs</code>, calculates a Bonferroni corrected alpha level that accounts for the spatial correlation of a relative risk surface.</td>
+<td>Called within <code>rrs</code> and <code>lotrrs</code>, calculates various multiple testing corrections for the alpha level. Three methods account for (spatially) dependent, multiple testing.</td>
 </tr>
 <td><code>lrr_plot</code></td>
 <td>Called within <code>rrs</code> and <code>lotrrs</code>, provides functionality for basic visualization of a log relative risk surface.</td>

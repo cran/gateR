@@ -9,6 +9,7 @@ gating(
   vars,
   n_condition = c(1, 2),
   numerator = TRUE,
+  bandw = NULL,
   alpha = 0.05,
   p_correct = "none",
   nbc = NULL,
@@ -16,13 +17,15 @@ gating(
   save_gate = FALSE,
   name_gate = NULL,
   path_gate = NULL,
-  rcols = c("#FF0000", "#cccccc", "#0000FF"),
+  rcols = c("#FF0000", "#CCCCCC", "#0000FF"),
   lower_lrr = NULL,
   upper_lrr = NULL,
   c1n = NULL,
   c2n = NULL,
   win = NULL,
-  ...
+  ...,
+  doplot = lifecycle::deprecated(),
+  verbose = lifecycle::deprecated()
 )
 }
 \arguments{
@@ -34,11 +37,13 @@ gating(
 
 \item{numerator}{Logical. If \code{TRUE} (the default), cells will be extracted within all statistically significant numerator (i.e., case) clusters. If \code{FALSE}, cells will be extracted within all statistically significant denominator (i.e., control) clusters.}
 
+\item{bandw}{Optional, numeric. Fixed bandwidth for the kernel density estimation. Default is based on the internal \code{[sparr]{OS}} function.}
+
 \item{alpha}{Numeric. The two-tailed alpha level for significance threshold (default is 0.05).}
 
-\item{p_correct}{Character string specifying whether to apply a correction for multiple comparisons including a Bonferroni correction \code{p_correct = "uncorrelated"} or a correlated Bonferroni correction \code{p_correct = "correlated"}. If \code{p_correct = "none"} (the default), then no correction is applied.}
+\item{p_correct}{Optional. Character string specifying whether to apply a correction for multiple comparisons including a False Discovery Rate \code{p_correct = "FDR"}, a spatially dependent Sidak correction \code{p_correct = "correlated Sidak"}, a spatially dependent Bonferroni correction \code{p_correct = "correlated Bonferroni"}, an independent Sidak correction \code{p_correct = "uncorrelated Sidak"}, an independent Bonferroni correction \code{p_correct = "uncorrelated Bonferroni"}, and a correction based on Random Field Theory using an equation by Adler and Hasofer \code{p_correct = "Adler and Hasofer"} or an equation by Friston et al. \code{p_correct = "Friston"}. If \code{p_correct = "none"} (the default), then no correction is applied.}
 
-\item{nbc}{Optional. An integer for the number of bins when \code{p_correct = "correlated"}. Similar to \code{nbclass} argument in \code{\link[pgirmess]{correlog}}. The default is the average number of gridded knots in one-dimension (i.e., x-axis).}
+\item{nbc}{Optional. An integer for the number of bins when \code{p_correct = "correlated"}. Similar to \code{nbclass} argument in \code{\link[SpatialPack]{modified.ttest}}. The default is 30.}
 
 \item{plot_gate}{Logical. If \code{TRUE}, the output includes basic data visualizations.}
 
@@ -60,7 +65,11 @@ gating(
 
 \item{win}{Optional. Object of class \code{owin} for a custom two-dimensional window within which to estimate the surfaces. The default is NULL and calculates a convex hull around the data.}
 
-\item{...}{Arguments passed to \code{\link[sparr]{risk}} to select bandwidth, edge correction, and resolution.}
+\item{...}{Arguments passed to \code{\link[sparr]{risk}} to select resolution.}
+
+\item{doplot}{\ifelse{html}{\figure{lifecycle-deprecated.svg}{options: alt='Deprecated lifecycle'}}{\strong{Deprecated}} \code{doplot} is no longer supported and has been renamed \code{plot_gate}.}
+
+\item{verbose}{\ifelse{html}{\figure{lifecycle-deprecated.svg}{options: alt='Deprecated lifecycle'}}{\strong{Deprecated}} \code{verbose} is no longer supported; this function will not display verbose output from internal \code{\link[sparr]{risk}} function.}
 }
 \value{
 An object of class \code{list}. This is a named list with the following components:
@@ -93,16 +102,15 @@ The \code{n_condition} argument specifies if the gating strategy is performed fo
 
 The p-value surface of the ratio of relative risk surfaces is estimated assuming asymptotic normality of the ratio value at each gridded knot. The bandwidth is fixed across all layers.
 
-Provides functionality for a correction for multiple testing.  If \code{p_correct = "uncorrelated"}, then a conventional Bonferroni correction is calculated by dividing the \code{alpha} level by the number of gridded knots across the estimated surface. The default in the \code{\link[sparr]{risk}} function is a resolution of 128 x 128 or n = 16,384 knots and a custom resolution can be specified using the \code{resolution} argument within the \code{\link[sparr]{risk}} function. If \code{p_correct = "correlated"} (NOTE: May take a considerable amount of computation resources and time), then a Bonferroni correction that takes into account the spatial correlation of the surface is calculated within the internal \code{pval_correct} function. The \code{alpha} level is divided by the minimum number of knots that are not spatially correlated. The minimum number of knots that are not spatially correlated is computed by counting the knots that are a distance apart that exceeds the minimum distance of non-significant spatial correlation based on a correlogram using the \code{\link[pgirmess]{correlog}} function. If \code{p_correct = "none"} (the default), then the function does not account for multiple testing and uses the uncorrected \code{alpha} level. See the internal \code{pval_correct} function documentation for more details.
+Provides functionality for a correction for multiple testing. If \code{p_correct = "FDR"}, calculates a False Discovery Rate by Benjamini and Hochberg. If \code{p_correct = "uncorrelated Sidak"}, calculates an independent Sidak correction. If \code{p_correct = "uncorrelated Bonferroni"}, calculates an independent Bonferroni correction. If \code{p_correct = "correlated Sidak"} or if \code{p_correct = "correlated Bonferroni"}, then the corrections take into account the into account the spatial correlation of the surface. (NOTE: If \code{p_correct = "correlated Sidak"} or if \code{p_correct = "correlated Bonferroni"}, it may take a considerable amount of computation resources and time to calculate). If \code{p_correct = "Adler and Hasofer"} or if \code{p_correct = "Friston"}, then calculates a correction based on Random Field Theory. If \code{p_correct = "none"} (the default), then the function does not account for multiple testing and uses the uncorrected \code{alpha} level. See the internal \code{pval_correct} function documentation for more details.
 }
 \examples{
 if (interactive()) {
 ## Single condition, no multiple testing correction
-  test_gate <- gateR::gating(dat = randCyto,
-                             vars = c("arcsinh_CD4", "arcsinh_CD38",
-                                      "arcsinh_CD8", "arcsinh_CD3"),
-                             n_condition = 1,
-                             p_correct = "none")
+  test_gate <- gating(dat = randCyto,
+                      vars = c("arcsinh_CD4", "arcsinh_CD38",
+                               "arcsinh_CD8", "arcsinh_CD3"),
+                      n_condition = 1)
 }
 
 }
