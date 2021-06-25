@@ -1,8 +1,8 @@
 Package: gateR
 Type: Package
 Title: Flow/Mass Cytometry Gating via Spatial Kernel Density Estimation
-Version: 0.1.8
-Date: 2021-03-14
+Version: 0.1.9
+Date: 2021-06-20
 Authors@R: 
     c(person(given = "Ian D.",
              family = "Buller",
@@ -43,7 +43,7 @@ LazyData: true
 RoxygenNote: 7.1.1
 Depends: R (>= 3.5.0), spatstat.geom, spatstat.core, spatstat.linnet,
         spatstat (>= 2.0-0)
-Imports: fields, graphics, grDevices, lifecycle, raster, sparr,
+Imports: fields, graphics, grDevices, lifecycle, raster, rlang, sparr,
         SpatialPack, stats, tibble, utils
 Suggests: R.rsp, spelling, testthat
 VignetteBuilder: R.rsp
@@ -51,11 +51,11 @@ Language: en-US
 URL: https://github.com/Waller-SUSAN/gateR
 BugReports: https://github.com/Waller-SUSAN/gateR/issues
 NeedsCompilation: no
-Packaged: 2021-03-15 03:40:15 UTC; bullerid
+Packaged: 2021-06-25 21:25:00 UTC; bullerid
 Author: Ian D. Buller [aut, cre, cph] (<https://orcid.org/0000-0001-9477-8582>),
   Elena Hsieh [ctb] (<https://orcid.org/0000-0003-3969-6597>),
   Debashis Ghosh [ctb] (<https://orcid.org/0000-0001-6618-1316>),
   Lance A. Waller [ctb] (<https://orcid.org/0000-0001-5002-8886>),
   NCI [cph]
 Repository: CRAN
-Date/Publication: 2021-03-15 11:30:05 UTC
+Date/Publication: 2021-06-25 23:00:05 UTC
