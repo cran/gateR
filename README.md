@@ -2,15 +2,17 @@ gateR: Flow/Mass Cytometry Gating via Spatial Kernel Density Estimation <img src
 ===================================================
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/lance-waller-lab/gateR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/lance-waller-lab/gateR/actions/workflows/R-CMD-check.yaml)
 [![CRAN status](http://www.r-pkg.org/badges/version/gateR)](https://cran.r-project.org/package=gateR)
 [![CRAN version](https://www.r-pkg.org/badges/version-ago/gateR)](https://cran.r-project.org/package=gateR)
-[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/gateR?color=blue)](https://r-pkg.org/pkg/gateR)
+[![CRAN RStudio mirror downloads total](https://cranlogs.r-pkg.org/badges/grand-total/gateR?color=blue)](https://r-pkg.org/pkg/gateR)
+[![CRAN RStudio mirror downloads monthly ](http://cranlogs.r-pkg.org/badges/gateR)](https://www.r-pkg.org:443/pkg/gateR)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![GitHub last commit](https://img.shields.io/github/last-commit/lance-waller-lab/gateR)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5347892.svg)](https://doi.org/10.5281/zenodo.5347892)
 <!-- badges: end -->
 
-**Date repository last updated**: December 01, 2022
+**Date repository last updated**: February 01, 2023
 
 <h2 id="overview">
 
@@ -32,7 +34,7 @@ For a two-group comparison of two conditions, we estimate two relative risk surf
     2. Condition 1B vs. Condition 1A
 2. Estimate the relative risk surface for the ratio:
 
-<img src="http://www.sciweavers.org/tex2img.php?eq=%5Cfrac%7B%20%5Cbig%28%5Cfrac%7BCondition2B%7D%7BCondition2A%7D%5Cbig%29%7D%7B%5Cbig%28%5Cfrac%7BCondition1B%7D%7BCondition1A%7D%5Cbig%29%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="\frac{ \big(\frac{Condition2B}{Condition2A}\big)}{\big(\frac{Condition1B}{Condition1A}\big)}" width="100" height="58" />
+$$\frac{ \big(\frac{Condition2B}{Condition2A}\big)}{\big(\frac{Condition1B}{Condition1A}\big)}$$
 
 Within areas where the relative risk exceeds an asymptotic normal assumption, the `gateR` package has the functionality to examine the features of these cells. Basic visualization is also supported. 
 
@@ -58,8 +60,8 @@ Available functions
 
 <table>
 <colgroup>
-<col width="30%" />
-<col width="70%" />
+<col width="30%"/>
+<col width="70%"/>
 </colgroup>
 <thead>
 <tr class="header">
@@ -99,8 +101,8 @@ Available sample data sets
 
 <table>
 <colgroup>
-<col width="30%" />
-<col width="70%" />
+<col width="30%"/>
+<col width="70%"/>
 </colgroup>
 <thead>
 <tr class="header">
@@ -121,7 +123,7 @@ Authors
 
 </h2>
 
-* **Ian D. Buller** - *Occupational and Environmental Epidemiology Branch, Division of Cancer Epidemiology and Genetics, National Cancer Institute, National Institutes of Health, Rockville, Maryland* - [GitHub](https://github.com/idblr) - [ORCID](https://orcid.org/0000-0001-9477-8582)
+* **Ian D. Buller** - *Social & Scientific Systems, Inc., a division of DLH Corporation, Silver Spring, Maryland (current)* - *Occupational and Environmental Epidemiology Branch, Division of Cancer Epidemiology and Genetics, National Cancer Institute, National Institutes of Health, Rockville, Maryland (former)* - *Environmental Health Sciences, James T. Laney School of Graduate Studies, Emory University, Atlanta, Georgia. (original)* - [GitHub](https://github.com/idblr) - [ORCID](https://orcid.org/0000-0001-9477-8582)
 
 See also the list of [contributors](https://github.com/lance-waller-lab/gateR/graphs/contributors) who participated in this project. Main contributors include:
 
@@ -252,7 +254,7 @@ test_lotrrs <- gateR::lotrrs(dat = obs_dat[ , -5:-4])
 
 ### Funding
 
-This package was developed while the author was a doctoral student at in the [Environmental Health Sciences doctoral program](https://www.sph.emory.edu/departments/eh/degree-programs/phd/index.html) at [Emory University](https://www.emory.edu/home/index.html) and a postdoctoral fellow supported by the [Cancer Prevention Fellowship Program](https://cpfp.cancer.gov/) at the [National Cancer Institute](https://www.cancer.gov/).
+This package was developed while the author was originally a doctoral student at in the [Environmental Health Sciences doctoral program](https://www.sph.emory.edu/departments/eh/degree-programs/phd/index.html) at [Emory University](https://www.emory.edu/home/index.html) and later as a postdoctoral fellow supported by the [Cancer Prevention Fellowship Program](https://cpfp.cancer.gov/) at the [National Cancer Institute](https://www.cancer.gov/). Any modifications since December 05, 2022 were made while the author was an employee of Social & Scientific Systems, Inc., a division of [DLH Corporation](https://www.dlhcorp.com).
 
 ### Acknowledgments
 

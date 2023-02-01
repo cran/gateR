@@ -25,14 +25,14 @@ Key content of the 'gateR' package include:\cr
 
 \bold{Flow Cytometry Data}
 
-\code{\link{randCyto}} A sample dataset containing information about flow cytometry data with two binary categorical variables. The data are a random subset of the 'extdata' data in the 'flowWorkspaceData' package found on Bioconductor \url{http://bioconductor.org/packages/release/data/experiment/html/flowWorkspaceData.html} and formatted for gateR input.
+\code{\link{randCyto}} A sample dataset containing information about flow cytometry data with two binary categorical variables. The data are a random subset of the 'extdata' data in the 'flowWorkspaceData' package found on Bioconductor \url{http://bioconductor.org/packages/release/data/experiment/html/flowWorkspaceData.html} and formatted for 'gateR' input.
 }
 \section{Dependencies}{
- The 'gateR' package relies heavily upon \code{\link{sparr}}, \code{\link{spatstat.geom}}, and \code{\link{raster}}. For a two-level comparison, the spatial relative risk function uses the \code{\link[sparr]{risk}} function. The calculation of a Bonferroni correction for multiple testing accounting for the spatial correlation of the estimated surface uses the \code{\link[SpatialPack]{modified.ttest}} function. Basic visualizations rely on the \code{\link[fields]{image.plot}} function.
+ The 'gateR' package relies heavily upon \code{\link{sparr}}, \code{\link{spatstat.geom}}, and \code{\link{terra}}. For a two-level comparison, the spatial relative risk function uses the \code{\link[sparr]{risk}} function. The calculation of a Bonferroni correction for multiple testing accounting for the spatial correlation of the estimated surface uses the \code{\link[SpatialPack]{modified.ttest}} function. Basic visualizations rely on the \code{\link[fields]{image.plot}} function.
 }
 
 \author{
-Ian D. Buller\cr \emph{Occupational and Environmental Epidemiology Branch, Division of Cancer Epidemiology and Genetics, National Cancer Institute, National Institutes of Health, Rockville, Maryland, USA.}
+Ian D. Buller\cr \emph{Social & Scientific Systems, Inc., a division of DLH Corporation, Silver Spring, Maryland, USA (current); Occupational and Environmental Epidemiology Branch, Division of Cancer Epidemiology and Genetics, National Cancer Institute, National Institutes of Health, Rockville, Maryland, USA (former); Environmental Health Sciences, James T. Laney School of Graduate Studies, Emory University, Atlanta, Georgia, USA. (original)}\cr
 
 Maintainer: I.D.B. \email{ian.buller@alumni.emory.edu}
 }
