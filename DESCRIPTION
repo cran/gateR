@@ -1,8 +1,8 @@
 Package: gateR
 Type: Package
 Title: Flow/Mass Cytometry Gating via Spatial Kernel Density Estimation
-Version: 0.1.13
-Date: 2023-02-01
+Version: 0.1.15
+Date: 2024-01-23
 Authors@R: 
     c(person(given = "Ian D.",
              family = "Buller",
@@ -50,11 +50,11 @@ Language: en-US
 URL: https://github.com/lance-waller-lab/gateR
 BugReports: https://github.com/lance-waller-lab/gateR/issues
 NeedsCompilation: no
-Packaged: 2023-02-01 23:16:19 UTC; ian.buller
+Packaged: 2024-01-23 14:13:48 UTC; ian.buller
 Author: Ian D. Buller [aut, cre, cph] (<https://orcid.org/0000-0001-9477-8582>),
   Elena Hsieh [ctb] (<https://orcid.org/0000-0003-3969-6597>),
   Debashis Ghosh [ctb] (<https://orcid.org/0000-0001-6618-1316>),
   Lance A. Waller [ctb] (<https://orcid.org/0000-0001-5002-8886>),
   NCI [cph]
 Repository: CRAN
-Date/Publication: 2023-02-01 23:30:02 UTC
+Date/Publication: 2024-01-23 14:30:04 UTC
